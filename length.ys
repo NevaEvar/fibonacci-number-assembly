@@ -1,0 +1,20 @@
+main:
+    .pos 0
+    irmovq $0x400, %rsi #nykyisen muisti osoitteen rekisteri
+    irmovq $0, %rax #tavujen laskin
+    irmovq $8, %rdx #muisti välin hyppy luku
+    irmovq $1, %r10 #rax rekisterin lisäys rekisteri
+    irmovq $0, %rbx
+    
+    loop:
+        mrmovq (%rsi), %rcx
+        addq %rdx, %rsi
+        xorq %rbx, %rcx
+        je done
+        addq %r10, %rax
+        jmp loop
+
+
+done: 
+    halt
+    
