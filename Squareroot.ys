@@ -1,0 +1,45 @@
+
+#syöttö rekisteriin %r12
+irmovq $0x00000000000000A9, %r12 #testi arvo
+#palautus rekisteriin %rcx 
+
+main:
+    irmovq $0, %rcx #res muuttuja algoritmissa
+    irmovq $0x0000000000010000, %rbx #bit muuttuja algoritmissa
+    irmovq $0, %rdx #bit muuttujan väli arvo bitAdjLoop:ia varten
+    
+    irmovq $1, %r10 #vakio +-1 arvo looppeja varten
+    irmovq $0x8, %rcx #jakaja 2^n, jossa n = 2
+    
+    
+#algoritmin ensimmäinen while looppi (toimii) 
+bitAdj:
+    
+    rrmovq %r12, %rsi #siirretään testi rekisteriin num arvo
+    subq %rbx, %rsi 
+    jl bitAdjMove
+    jmp done #muuta seuraavaan osioon kun valmis
+    
+    #siirtää bitit kaksi oikealle
+    bitAdjMove:
+        addq %r10, %rdx
+        subq %rcx, %rbx
+        jg bitAdjMove
+        jl sub
+        rrmovq %rdx, %rbx 
+        irmovq $0, %rdx #nollaa rekisterin jos sitä looppia käytetään uudestaan
+        jmp bitAdj
+    
+    sub:
+        subq %r10, %rdx
+        rrmovq %rdx, %rbx #nollaa rekisterin jos sitä looppia käytetään uudestaan
+        jmp bitAdj
+    
+#pääalgoritmi 
+resCalc:
+    
+
+    
+done: 
+    halt
+    
