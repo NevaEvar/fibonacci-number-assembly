@@ -1,0 +1,34 @@
+main:
+    irmovq $0, %rsi #summan rekisteri
+    irmovq $0, %rcx #jakajan arvo
+    irmovq $1, %r10 #+1 vakio rekisteri
+    
+
+addition: 
+    rrmovq %rsp, %r9 #< käy rekisterin elementin ja tarkistaa ollaanko käyty rekisteri läpi
+    subq %rbp, %r9 #<
+    je division #<
+    addq %r10, %rcx
+    popq %rbx
+    addq %rbx, %rsi
+    jmp addition
+    
+
+    
+division: 
+    addq %r10, %rax
+    subq %rcx, %rsi
+    jg division
+    jl sub
+    jmp done
+
+sub: #jos jako ei ole tasan niin pyöristää alas päin
+    subq %r10, %rax 
+    jmp done
+
+
+done: 
+    halt
+    
+.pos 0x400
+pino:

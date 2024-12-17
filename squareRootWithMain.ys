@@ -1,0 +1,92 @@
+
+
+
+main:
+    irmovq pino, %rsp #osoitin
+    irmovq pino, %rbp #alku
+    
+    irmovq $0, %r14 #vakio 0 arvo testejä varten
+    irmovq $0, %rcx #res muuttuja algoritmissa
+    irmovq $0x0000000000010000, %rbx #bit muuttuja algoritmissa
+    irmovq $0, %rdx #bit muuttujan väli arvo bitAdjLoop:ia varten
+    
+    irmovq $1, %r10 #vakio +-1 arvo looppeja varten
+    irmovq $0x2, %rax #jakaja 2^n, jossa n = 1 
+    
+    
+#algoritmin ensimmäinen while looppi (toimii) 
+
+bitAdj:
+    
+    rrmovq %r12, %rsi #siirretään testi rekisteriin num arvo
+    subq %rbx, %rsi 
+    jge resCalc #while (bit > num) 
+    
+    irmovq $0x1, %rdi
+    call bitAdjMove
+    jmp bitAdj
+    
+
+    .pos 0x100
+    bitAdjMove:
+        rrmovq %rdi, %r11
+        
+        addq %rdi, %rdi
+        addq %rdi, %rdi 
+        
+        rrmovq %rdi, %r8
+        subq %rbx, %r8
+        jl bitAdjMove
+        rrmovq %r11, %rbx
+        cmovg %r14, %rbx 
+        ret
+    
+    
+#pääalgoritmi 
+resCalc:
+    irmovq $0, %r14
+    subq %rbx, %r14  #while (bit != 0) 
+    jge done
+    
+    rrmovq %r12, %rsi #if (num >= res + bit)
+    rrmovq %rcx, %r13 #<
+    addq %rbx, %r13 #<
+    subq %r13, %rsi #< num -= res + bit
+    jge calc         #<
+    
+    #else
+    call resMove
+    irmovq $0x1, %rdi
+    call bitAdjMove
+    jmp resCalc
+
+    calc: #if sisälmys
+        subq %r13, %r12 #< num -= res + bit
+        call resMove
+        addq %rbx, %rcx
+        irmovq $0x1, %rdi
+        call bitAdjMove
+        jmp resCalc
+        
+    
+    .pos 0x200
+    resMove:
+        addq %r10, %rdx
+        subq %rax, %rcx
+        jg resMove
+        jl resMoveSub
+        rrmovq %rdx, %rcx
+        irmovq $0, %rdx
+        ret
+    
+    resMoveSub:
+        subq %r10, %rdx
+        rrmovq %rdx, %rcx
+        irmovq $0, %rdx
+        ret
+
+done: 
+    halt
+
+.pos 0x400
+pino:    

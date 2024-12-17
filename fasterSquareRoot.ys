@@ -1,0 +1,139 @@
+
+main:
+    irmovq pino, %rsp               #osoitin
+    irmovq pino, %rbp               #alku
+    
+    irmovq $0, %r14                 #vakio 0 arvo testejä varten
+    irmovq $0, %rcx                 #res muuttuja algoritmissa
+    irmovq $0x0000000000010000, %rbx #bit muuttuja algoritmissa
+    irmovq $0, %rdx                 #bit muuttujan väli arvo bitAdjLoop:ia varten
+    
+    irmovq $1, %r10                 #vakio +-1 arvo looppeja varten
+    
+    
+#algoritmin ensimmäinen while looppi (toimii) 
+
+bitAdj:
+    
+    rrmovq %r12, %rsi               #siirretään testi rekisteriin num arvo
+    subq %rbx, %rsi 
+    jge resCalc                     #while (bit > num) 
+    
+    irmovq $0x1, %rdi
+    call bitAdjMove
+    jmp bitAdj
+    
+
+    #siirtää oikealta vasemmalle testi bittiä kunnes menee annetun arvon yli
+    #tämä sen takia, koska se on nopeampaa kuin vasemmalta oikealla vieminen jakolaskulla
+    .pos 0x100
+    bitAdjMove:
+        rrmovq %rdi, %r11       
+        
+        addq %rdi, %rdi
+        addq %rdi, %rdi 
+        
+        rrmovq %rdi, %r8
+        subq %rbx, %r8
+        jl bitAdjMove
+        rrmovq %r11, %rbx
+        cmovg %r14, %rbx 
+        ret
+    
+    
+#main algo 
+resCalc:
+    irmovq $0, %r14
+    subq %rbx, %r14                 #while (bit != 0) 
+    jge done
+    
+    rrmovq %r12, %rsi               #if (num >= res + bit)
+    rrmovq %rcx, %r13               #<
+    addq %rbx, %r13                 #<
+    subq %r13, %rsi                 #< num -= res + bit
+    jge calc                        #<
+    
+    #sisältää else lauseen komennot algosta
+    call resMove
+    irmovq $0x1, %rdi
+    call bitAdjMove
+    jmp resCalc
+
+    calc:                           #if sisälmys
+        subq %r13, %r12             #< num -= res + bit
+        call resMove
+        addq %rbx, %rcx
+        irmovq $0x1, %rdi
+        call bitAdjMove
+        jmp resCalc
+        
+    
+    #siirtää %rcx rekisterissä olevan arvon ja palauttaa shiftatun arvon samaan rekisteriin
+    .pos 0x200
+    resMove:                        
+        irmovq $0, %r13             #counter for the addition
+        irmovq $0, %r11 
+        irmovq $0x1, %rdi 
+        irmovq $0, %r14
+        
+        subq %rcx, %r14
+        je zeroEarlyExit            #for the first iteration of main algo
+    
+        #irrottaa jokaisen bitin erilliseen arvoon ja säilöö sen pinoon
+        #0b 1101 olisi pinossa 
+        #0b 0001
+        #0b 0100
+        #0b 1000
+        
+        removeLoop:
+            rrmovq %rdi, %r9
+            addq %rdi, %rdi
+            rrmovq %rcx, %r8
+            subq %rdi, %r8
+            jge removeLoop
+        
+            pushq %r9
+            subq %r9, %rcx
+            irmovq $0x1, %rdi
+            addq %r10, %r13             #pitää huolen pino käydään läpi
+        
+            irmovq $0, %r14
+            subq %rcx, %r14
+        
+            je constructLoop
+            jmp removeLoop
+        
+        #shiftaa pinosta tehokkaasti yhden bitin oikealle ja kasaa siitä shiftatun arvon
+        constructLoop:
+            popq %rcx
+            irmovq $0x1, %rdi
+            
+            constructShift:
+                rrmovq %rdi, %r9
+                addq %rdi, %rdi
+                rrmovq %rdi, %r8
+                subq %rcx, %r8
+                jl constructShift
+            
+                subq %r9, %r10          #testaa onko r9 0x1
+                cmove %r14, %r9         #jos on niin heittää ns tippuvan bitin pois
+                irmovq $1, %r10 
+            
+            addq %r9, %r11              #lisää shiftatun bitin lopulliseen arvoon
+            subq %r10, %r13             #pitää huolen pino käydään läpi 
+            jne constructLoop
+    
+            rrmovq %r11, %rcx
+            ret
+        
+        zeroEarlyExit:
+            ret
+    
+
+done: 
+    halt
+
+.pos 0x400
+pino:    
+
+

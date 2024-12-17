@@ -1,0 +1,9 @@
+main:
+    irmovq $0, %rax
+    irmovq $1, %rdx
+    loop:
+        addq %rsi, %rax
+        subq %rdx, %rdi
+        jne loop 
+        halt
+    

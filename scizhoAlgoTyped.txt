@@ -1,0 +1,32 @@
+loop:	
+	rrmovq %rdx, %r9
+	addq %rdx, %rdx 
+	rrmovq %rcx, %r8
+	subq %rdx, %r8
+	jl loop
+	
+	pushq %r9
+	subq %r9, %rcx
+	irmovq $0x1, %rdx
+	#jokin testaamaan onko rcx tyhjä 2 käskyä
+	je phase2
+	jmp loop
+	
+
+phase 2:
+	popq %rdx
+	rrmovq %rdx, %rcx
+	loop2:
+		rrmovq %rdx, %r9
+		addq %rdx, %rdx
+		irmovq %rdx, %r8
+		subq %rcx, %r8
+		jl loop2
+	
+	xorq %r9, %11
+	jne counter 
+	irmovq %r11, %rcx
+
+
+
+

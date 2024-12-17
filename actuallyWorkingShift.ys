@@ -1,0 +1,27 @@
+main:
+    irmovq $0x000000000000F000, %r12 #bitti maski E[3:0] varten
+    irmovq $0x0000000000000FFF, %r14 #bitti maski R[11:0] varten
+    irmovq $0x1000, %rbx #jakaja bitti siirtoa varten
+    irmovq $1, %r10 #vakio +-1 arvo looppeja varten
+    
+    andq %r13, %r12 #saadaan ei shiftattu E[3:0] arvo
+    andq %r14, %r13 #saadaan lopullinen R[11:0] arvo
+    irmovq $0, %r14
+
+#oikealle shiftaus
+div:
+    divLoop:
+        addq %r10, %r14
+        subq %rbx, %r12
+        jg divLoop
+        jl sub 
+        jmp done
+    
+    sub:
+        subq %r10, %r14
+        jmp done 
+    
+
+done: 
+    halt
+    

@@ -1,0 +1,48 @@
+main:
+
+    irmovq $0, %rbx         #counter for shifting
+    irmovq $1, %r10         #+- 1 vakio
+    irmovq $0, %r14         #vakio
+    
+    findingShift:
+    irmovq $0x1, %rdx
+        
+        fsl:
+            rrmovq %rdx, %rcx
+            addq %rdx, %rdx
+            rrmovq %r12, %r9
+            addq %r10, %rbx         #tulee sisältämään kuinka monta kertaa shiftataan
+            subq %rdx, %r9
+            jge fsl
+            
+            subq %rcx, %r12
+            
+            jl done
+        
+        
+    
+    
+    shift:
+        rrmovq %r11, %r9
+        subq %r10, %rbx
+        je lastLoop
+        sl:
+            addq %r9, %r9
+            subq %r10, %rbx
+            jne sl
+        
+        
+    
+    
+    add: 
+        addq %r9, %rax
+        jmp findingShift
+        
+        
+    
+    lastLoop:
+        addq %r9, %rax
+    
+done:
+    halt
+    

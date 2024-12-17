@@ -1,0 +1,43 @@
+irmovq $0x0FFFFFFFFFFFFFFF, %r13
+
+main:
+    irmovq $2, %rbx #2^n kerroin
+    irmovq $2, %rdi #bitti siirto vasemmalle n + 1 siirtoa vasemmalle eli tässä = 4 
+    irmovq $1, %r10 #vakio +-1 arvo looppeja varten
+
+
+exp:
+	addq %rbx, %rbx
+	subq %r10, %rdi
+	je multi
+	rrmovq %rbx, %rsi #bittien takaisin siirto varten
+	addq %rsi, %rsi 
+	jmp exp
+	
+multi:
+        irmovq $0, %rax
+        irmovq $1, %rdx
+    multiLoop:
+        addq %r13, %rax
+        subq %rdx, %rbx
+        jne multiLoop 
+        jmp div
+
+div:
+    irmovq $0, %r9
+    divLoop:
+        addq %r10, %r9
+        subq %rsi, %rax
+        je done
+        jl sub
+        jmp divLoop
+    
+    sub:
+        subq %r10, %r9
+        jmp done
+    
+    
+
+done: 
+    halt
+    

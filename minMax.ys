@@ -1,0 +1,27 @@
+main:
+    #alku sijoiteus vertailua varten ensimmäinen arvo annetaan molemmille rekistereille
+    popq %rbx
+    rrmovq %rbx, %rsi 
+    rrmovq %rbx, %rdi 
+
+compare:
+    rrmovq %rsi, %rcx 
+    subq %rbx, %rcx
+    cmovg %rbx, %rsi #vaihtaa jos pienempää kuin rsi
+    
+    rrmovq %rdi, %rcx
+    subq %rbx, %rcx
+    cmovl %rbx, %rdi #vaihtaa jos isompaa kuin rdi
+    
+    rrmovq %rsp, %r9 #hoitaa iteroinnin pinossa ja milloin lopettaa
+    subq %rbp, %r9
+    je done
+    
+    popq %rbx #ottaa seuraavan elementin käsittelyyn 
+    jmp compare
+
+done: 
+    halt
+    
+.pos 0x400
+pino:

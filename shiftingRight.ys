@@ -1,0 +1,60 @@
+main:
+    irmovq pino, %rsp #osoitin
+    irmovq pino, %rbp #alku
+    
+    irmovq $0, %r13 #counter for the addition
+    irmovq $1, %r10 #vakio 1
+    irmovq $0, %r14 #vakio 0
+    
+    irmovq $0x1, %rdx
+    
+    removeLoop:
+        rrmovq %rdx, %r9
+        addq %rdx, %rdx
+        rrmovq %r12, %r8
+        subq %rdx, %r8
+        jg removeLoop
+        
+        pushq %r9
+        subq %r9, %r12
+        irmovq $0x1, %rdx
+        addq %r10, %r13
+        
+        irmovq $0, %r14
+        subq %r12, %r14
+        
+        je constructLoop
+        jmp removeLoop
+        
+    
+    constructLoop:
+        popq %r12
+        irmovq $0x1, %rdx
+        
+        constructShift:
+            rrmovq %rdx, %r9
+            addq %rdx, %rdx
+            rrmovq %rdx, %r8
+            subq %r12, %r8
+            jl constructShift
+            
+            subq %r9, %r10 #testaa onko r9 0x1
+            cmove %r14, %r9
+            irmovq $1, %r10 
+            
+         
+    
+    addq %r9, %r11
+    subq %r10, %r13
+    jne constructLoop
+    
+    rrmovq %r11, %r12
+    jmp done
+    
+    
+done: 
+    halt
+
+.pos 0x400
+pino:    
+
