@@ -1,29 +1,20 @@
 
 
-
 #joke kerta ennen funktion kutsumista syötetään nykyiset rekisteri arvot pinoon 
 
 
 .pos 0
-   irmovq array, %r11     # muistipaikka 0x700
-   
-   irmovq $3, %r12        # 3
-   rmmovq %r12, (%r11)
-   
-   irmovq $5, %r12        # 5
-   rmmovq %r12, 8(%r11)
-   
-   irmovq $8, %r12        # 8
-   rmmovq %r12, 16(%r11)
-   
-   irmovq $13, %r12       # 13
-   rmmovq %r12, 24(%r11)
-   
-   irmovq $21, %r12        # 21
-   rmmovq %r12, 32(%r11)
-   
-   irmovq $0, %r12        # loppunolla
-   rmmovq %r12, 40(%r11)
+irmovq array,%r11
+irmovq $233,%r12
+rmmovq %r12,(%r11)
+irmovq $377,%r12
+rmmovq %r12,8(%r11)
+irmovq $610,%r12
+rmmovq %r12,16(%r11)
+irmovq $987,%r12
+rmmovq %r12,24(%r11)
+irmovq $0,%r12
+rmmovq %r12,32(%r11)
    
 # Tästä alkaa palautettava koodi
 
@@ -215,7 +206,7 @@ multiply:
 squareRoot:
     irmovq $0, %r14                 #vakio 0 arvo testejä varten
     irmovq $0, %rcx                 #res muuttuja algoritmissa
-    irmovq $0x0000000000010000, %rbx #bit muuttuja algoritmissa
+    irmovq $0x0000000001000000, %rbx #bit muuttuja algoritmissa
     irmovq $0, %rdx                 #bit muuttujan väli arvo bitAdjLoop:ia varten
     
     irmovq $1, %r10                 #vakio +-1 arvo looppeja varten
@@ -359,4 +350,4 @@ array:
 .pos 0xa00
 pino:
     
-
+    
