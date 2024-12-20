@@ -1,1 +1,6 @@
 Contains debugging stages of the project
+
+The problem is in the square root calculator since the result for 271441 is 511 when it should be 521.
+
+
+
